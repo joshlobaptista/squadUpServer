@@ -1,4 +1,5 @@
 var mongoose = require("mongoose")
+const User = require('./users');
 
 var ParkSchema = new mongoose.Schema({
     name: { type: String },
@@ -7,6 +8,10 @@ var ParkSchema = new mongoose.Schema({
             index: "2dsphere",
             type: [Number]
         }
+    },
+    user_id: {
+        type: String, 
+        required: true
     }
 });
 

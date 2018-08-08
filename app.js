@@ -1,5 +1,7 @@
 // Full Documentation - https://www.turbo360.co/docs
 const vertex = require('vertex360')({site_id: process.env.TURBO_APP_ID})
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 // const app = vertex.app() // initialize app
 
@@ -13,7 +15,7 @@ const config = {
 	static: 'public', 		// Set static assets directory
 	db: { 					// Database configuration. Remember to set env variables in .env file: MONGODB_URI, PROD_MONGODB_URI
 		// url: (process.env.TURBO_ENV == 'dev') ? process.env.MONGODB_URI : process.env.PROD_MONGODB_URI,
-		url: 'mongodb://cvcoder:cvcoder1@ds159013.mlab.com:59013/finalproject',
+		url: 'mongodb://cvcoder:cvcoder1@ds159013.mlab.com:59013/finalproject', //'mongodb://localhost/finalProjectTest', // PRODUCTION: 'mongodb://cvcoder:cvcoder1@ds159013.mlab.com:59013/finalproject',
 		type: 'mongo',
 		onError: (err) => {
 			console.log('DB Connection Failed!')
@@ -24,6 +26,8 @@ const config = {
 // initialize app with config options
 const app = vertex.app(config)  
 
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cors());
 
 // import routes
 const index = require('./routes/index')
@@ -32,6 +36,8 @@ const api = require('./routes/api')
 // set routes
 app.use('/', index)
 app.use('/api', api) // sample API Routes
+
+
 
 
 module.exports = app
