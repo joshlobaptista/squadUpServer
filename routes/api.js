@@ -52,24 +52,6 @@ router.get("/:resource", (req, res) => {
 			data,
 		})
 	})
-	// model
-	// .find()
-	// .where("location")
-	// .within(geo)
-	// .exec(function(err, parks){
-	// 	if (err) {
-	// 		console.log(err);
-	// 		res.json({
-	// 			confirmation: "error",
-	// 			message: err.message
-	// 		})
-	// 		return
-	// 	}
-	// 	res.json({
-	// 		confirmation: "success",
-	// 		data: parks
-	// 	});
-	// })
 });
 
 router.post('/park', (req,res,next)=>{
@@ -82,8 +64,41 @@ router.post('/park', (req,res,next)=>{
 
 		res.send(response);
 	})
-})
+});
 
+router.post('/users', (req, res) => {
+	console.log(req.body);
+	turbo.createUser(req.body)
+	.then(data => {
+		res.json({
+			confirmation: 'success',
+			data: data
+		});
+	})
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		});
+	});
+}); 
+
+router.post('/login', (req, res) => {
+	console.log(req.body);
+	turbo.login(req.body)
+	.then(data => {
+		res.json({
+			confirmation: 'success',
+			data: data
+		});
+	})
+	.catch(err => {
+		res.json({
+			confirmation: 'fail',
+			message: err.message
+		});
+	});
+}); 
 
 router.get('/:resource/:id', (req, res) => {
 	res.json({
@@ -92,63 +107,57 @@ router.get('/:resource/:id', (req, res) => {
 		id: req.params.id,
 		query: req.query // from the url query string
 	})
-})
-
-router.post('/users', (req, res, next) => {
-	const newUser = req.body;
-
-	console.log(req.body);
-
-	if(!newUser.email || !newUser.password) {
-		return next('Need email and password'); 
-	}
-
-	Users.create(newUser, function(err, resp){
-		console.log(err, resp)
-
-		if (err) {
-			return next('User cannot created');
-		}
-
-		res.json(resp);
-	});
-})
-
-router.post('/login', (req,res,next) => {
-	const loginAttempt = req.body;
-	let dbUser = {};
-
-	Users.find({email: loginAttempt.email}, function(err, user){
-		console.log(err)
-
-		if(err) {
-			return next('Cannot find that user')
-		}
-		dbUser = user[0];
-
-		if (loginAttempt.password === dbUser.password) {
-			// Authenticate and do something // next(dbUser)
-			req.user = dbUser;
-			return next()
-		} else {
-			res.send('Not Authenticated')
-		}
-	});
+});
 
 
-}, (req, res, next)=>{
-	//res.send(req.user._id)
-	console.log(req.user)
-	const id = new mongoose.Types.ObjectId(req.user._ids);
 
-	Park.find({user_id: id}, (err, parks) =>{
-		if (err) {
-			return next('No parks found');
-		}
-		res.json(parks)
-	})
+// router.post('/login', (req,res,next) => {
+// 	const loginAttempt = req.body;
+// 	let dbUser = {};
 
-})
+// 	Users.find({email: loginAttempt.email}, (err, user) => {
+// 		console.log(err)
+
+// 		if(err) {
+// 			return next('Cannot find that user')
+// 		}
+// 		dbUser = user[0];
+
+// 		if (loginAttempt.password === dbUser.password) {
+// 			// Authenticate and do something // next(dbUser)
+// 			req.user = dbUser;
+// 			return next()
+// 		} else {
+// 			res.send('Not Authenticated')
+// 		}
+// 	});
+
+
+// }, 
+
+
+
+// (req, res, next) => {
+// 	//res.send(req.user._id)
+// 	console.log(req.user)
+// 	const id = new mongoose.Types.ObjectId(req.user._ids);
+// 	const cursor = Park.find({});
+
+// 	cursor.where({user_id: id}).exec((err,resp) =>{
+// 		if(err) {
+// 			return next('No Parks Found for user');
+// 		}
+// 		res.json(resp);
+// 	});
+
+// 	Park.find({user_id: id}, (err, parks) =>{
+// 		if (err) {
+// 			return next('No parks found');
+// 		}
+// 		res.json(parks)
+// 	})
+
+// }
 
 router.use((err, req,res,next)=>{
 	res.send(err);
